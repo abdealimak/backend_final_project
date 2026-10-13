@@ -1,0 +1,1100 @@
+{
+  "info": {
+    "name": "PaySecure API Collection",
+    "description": "Complete API collection for the PaySecure Payment Gateway System.\n\nSetup:\n1. Run the seed script: npm run seed\n2. Login with demo credentials to get a JWT token\n3. Set the 'jwt' variable with the token\n\nDemo Credentials:\n- Admin: admin@paysecure.com / admin123\n- Customer: customer@paysecure.com / customer123\n- Merchant: merchant@paysecure.com / merchant123",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "jwt",
+      "value": ""
+    },
+    {
+      "key": "merchantId",
+      "value": ""
+    },
+    {
+      "key": "paymentMethodId",
+      "value": ""
+    },
+    {
+      "key": "transactionId",
+      "value": ""
+    },
+    {
+      "key": "apiKey",
+      "value": ""
+    },
+    {
+      "key": "refundId",
+      "value": ""
+    },
+    {
+      "key": "settlementId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Customer)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"test@example.com\",\n  \"password\": \"test123\",\n  \"role\": \"customer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register (Merchant)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Merchant\",\n  \"email\": \"testmerchant@example.com\",\n  \"password\": \"test123\",\n  \"role\": \"merchant\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Customer)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@paysecure.com\",\n  \"password\": \"customer123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set(\"jwt\", jsonData.data.token);",
+                  "    console.log(\"Saved JWT to collection variable:\", jsonData.data.token.substring(0, 15) + \"...\");",
+                  "}",
+                  "if (jsonData.data && jsonData.data.user && jsonData.data.user.role === \"merchant\" && jsonData.data.user.merchantId) {",
+                  "    pm.collectionVariables.set(\"merchantId\", jsonData.data.user.merchantId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Merchant)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"merchant@paysecure.com\",\n  \"password\": \"merchant123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set(\"jwt\", jsonData.data.token);",
+                  "    console.log(\"Saved JWT to collection variable:\", jsonData.data.token.substring(0, 15) + \"...\");",
+                  "}",
+                  "if (jsonData.data && jsonData.data.user && jsonData.data.user.role === \"merchant\" && jsonData.data.user.merchantId) {",
+                  "    pm.collectionVariables.set(\"merchantId\", jsonData.data.user.merchantId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@paysecure.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set(\"jwt\", jsonData.data.token);",
+                  "    console.log(\"Saved JWT to collection variable:\", jsonData.data.token.substring(0, 15) + \"...\");",
+                  "}",
+                  "if (jsonData.data && jsonData.data.user && jsonData.data.user.role === \"merchant\" && jsonData.data.user.merchantId) {",
+                  "    pm.collectionVariables.set(\"merchantId\", jsonData.data.user.merchantId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Firebase Auth",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/firebase",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"YOUR_FIREBASE_ID_TOKEN_HERE\",\n  \"role\": \"customer\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Methods",
+      "item": [
+        {
+          "name": "Add Card",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payment-methods",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"card\",\n  \"provider\": \"Visa\",\n  \"last4\": \"4242\",\n  \"nickname\": \"My Visa Card\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Payment method added\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data._id) {",
+                  "    pm.collectionVariables.set(\"paymentMethodId\", jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add UPI",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payment-methods",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"upi\",\n  \"provider\": \"Google Pay\",\n  \"upiId\": \"test@okaxis\",\n  \"nickname\": \"My GPay\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Add Wallet",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payment-methods",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"wallet\",\n  \"provider\": \"Paytm\",\n  \"nickname\": \"My Paytm Wallet\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Payment Methods",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payment-methods",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Delete Payment Method",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/payment-methods/{{paymentMethodId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment (Success)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 500,\n  \"merchantId\": \"{{merchantId}}\",\n  \"paymentMethodId\": \"{{paymentMethodId}}\",\n  \"description\": \"T-shirt purchase\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Payment successful\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.transactionId) {",
+                  "    pm.collectionVariables.set(\"transactionId\", jsonData.data.transactionId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Payment (Pending - Large Amount)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 150000,\n  \"merchantId\": \"{{merchantId}}\",\n  \"paymentMethodId\": \"{{paymentMethodId}}\",\n  \"description\": \"Large purchase - goes to pending\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Payment (Failed - Amount 13)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 13,\n  \"merchantId\": \"{{merchantId}}\",\n  \"paymentMethodId\": \"{{paymentMethodId}}\",\n  \"description\": \"Test failure trigger\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Payment (Fraud Flag - 60000)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 60000,\n  \"merchantId\": \"{{merchantId}}\",\n  \"paymentMethodId\": \"{{paymentMethodId}}\",\n  \"description\": \"Large amount - triggers fraud flag\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get My Transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Transaction by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/{{transactionId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Request Refund",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/refund",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": \"{{transactionId}}\",\n  \"reason\": \"Customer cancelled order\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Disputes",
+      "item": [
+        {
+          "name": "Create Dispute",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/payments/{{transactionId}}/dispute",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Product not received\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Disputes for Transaction",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/payments/{{transactionId}}/disputes",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refunds",
+      "item": [
+        {
+          "name": "List Refunds",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/refunds",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.length > 0) {",
+                  "    pm.collectionVariables.set(\"refundId\", jsonData.data[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Request Refund (Endpoint 2)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/refunds/request",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionId\": \"{{transactionId}}\",\n  \"reason\": \"Item was not as described\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data._id) {",
+                  "    pm.collectionVariables.set(\"refundId\", jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approve Refund (Merchant/Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/refunds/{{refundId}}/approve",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Reject Refund (Merchant/Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/refunds/{{refundId}}/reject",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejectionReason\": \"Goods returned after 30-day policy\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Merchants",
+      "item": [
+        {
+          "name": "Register Merchant",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/merchants/register",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"businessName\": \"My Test Store\",\n  \"description\": \"A test merchant store\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Merchants",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/merchants",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.length > 0) {",
+                  "    pm.collectionVariables.set(\"merchantId\", jsonData.data[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Merchant by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/merchants/{{merchantId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Merchant Transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/merchants/{{merchantId}}/transactions",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Keys",
+      "item": [
+        {
+          "name": "Generate API Key",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/merchants/keys",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test API Key\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data._id) {",
+                  "    pm.collectionVariables.set(\"apiKey\", jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get API Keys",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/merchants/keys",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Delete API Key",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/merchants/keys/{{apiKey}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settlements",
+      "item": [
+        {
+          "name": "Get Settlements",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settlements",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Generate Settlement",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/settlements/generate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data._id) {",
+                  "    pm.collectionVariables.set(\"settlementId\", jsonData.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Settlement by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/settlements/{{settlementId}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/transactions",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Reports",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/reports",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Settings",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/settings",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Transaction Fee",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/fees",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transactionFeePercentage\": 2.5\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Settlement Rules",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/settlement-rules",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"settlementFrequency\": \"weekly\",\n  \"minimumSettlementAmount\": 5000\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/users",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/users/USER_ID_HERE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete (Deactivate) User",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/admin/users/USER_ID_HERE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get All Merchants (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/merchants",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Merchant (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/merchants/MERCHANT_ID_HERE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"suspended\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete (Deactivate) Merchant",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/admin/merchants/MERCHANT_ID_HERE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get All Disputes (Admin)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/admin/disputes",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Dispute (Admin)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/admin/disputes/DISPUTE_ID_HERE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\",\n  \"resolution\": \"Refund issued to customer\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fraud",
+      "item": [
+        {
+          "name": "Fraud Check",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/fraud/check",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 75000\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Fraud Reports",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/fraud/reports",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt}}"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
