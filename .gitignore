@@ -45,21 +45,3 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
-
-# AI / Assistant / Tool Artifacts (Prevent accidental leaks)
-.claude/
-.cursor/
-.cursorrules
-.copilot/
-.chat/
-.gemini/
-.agents/
-.prompt/
-.prompts/
-.history/
-*.prompt
-*.prompt.md
-.aider*
-.v0/
-.continue/
-*.chat
